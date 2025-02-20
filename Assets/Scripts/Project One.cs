@@ -17,6 +17,10 @@ public class ProjectOne : MonoBehaviour
     public int skeletonDexterity = 0;
     int skeletonMagicPowerLevel = 0;
 
+    bool gameOver = false;
+    bool isPlayerLeveledUp = false;
+    bool skeletonDefeat = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,6 +32,7 @@ public class ProjectOne : MonoBehaviour
     void Update()
     {
         Battle();
+        GameRestart();
     }
 
     void SetPlayerStats()
@@ -52,6 +57,8 @@ public class ProjectOne : MonoBehaviour
         {
             playerHealth = playerHealth + 25;
             Debug.Log("Player has leveled up, new health is " + playerHealth + ". Stats have increased.");
+
+            isPlayerLeveledUp = true;
         }
     }
 
@@ -63,26 +70,43 @@ public class ProjectOne : MonoBehaviour
             skeletonMagicPowerLevel = GenerateSkeletonMagicPower(skeletonFaith, skeletonStrength, skeletonDexterity);
             DetermineWinner(playerMagicPowerLevel, skeletonMagicPowerLevel);
         }
-        else if(playerHealth <= 0)
+        else if(playerHealth <= 0 && gameOver == false)
         {
             Debug.Log("Player has died, restart?");
+            gameOver = true;
         }
-        else if(skeletonHealth <= 0)
+        else if(skeletonHealth <= 0 && gameOver == false)
         {
-            Debug.Log("Skeleton has been defeated.");
+            if(skeletonDefeat == false)
+            {
+                Debug.Log("Skeleton has been defeated.");
+            }
+            
+            skeletonDefeat = true;
+
+            PlayerLevelUp();
+
+            if(isPlayerLeveledUp == true)
+            {
+                SetSkeletonStats();
+
+                isPlayerLeveledUp = false;
+
+                skeletonDefeat = false;
+            }
         }
     }
     
     int GeneratePlayerMagicPower(float playerFaith, float playerStrength, float playerDexterity)
     {
-        int playerMagicPower = (int)((playerFaith * 0.5) * (playerStrength * 1.5) * (playerDexterity * 0.75));
+        int playerMagicPower = (int)((playerFaith * 0.5) * (playerStrength * 1.5) * (playerDexterity * 0.75) * (Random.Range(1, 10)));
 
         return playerMagicPower;
     }
 
     int GenerateSkeletonMagicPower(float skeletonFaith, float skeletonStrength, float skeletonDexterity)
     {
-        int skeletonMagicPower = (int)((skeletonFaith * 0.5) * (skeletonStrength * 1.5) * (skeletonDexterity * 0.75));
+        int skeletonMagicPower = (int)((skeletonFaith * 0.5) * (skeletonStrength * 1.5) * (skeletonDexterity * 0.75) * (Random.Range(1, 10)));
 
         return skeletonMagicPower;
     }
@@ -92,35 +116,30 @@ public class ProjectOne : MonoBehaviour
         if (playerMagicPowerLevel > skeletonMagicPowerLevel)
         {
             skeletonHealth -= 10;
-
-            if (skeletonHealth >= 0)
-            {
-                Debug.Log("Skeleton has been defeated.");
-            }
+            Debug.Log("Skeleton has taken 10 damage.");
         }
         else if(skeletonMagicPowerLevel > playerMagicPowerLevel)
         {
             playerHealth -= 10;
-
-            if (playerHealth >= 0)
-            {
-                Debug.Log("Player has died, restart?");
-            }
+            Debug.Log("Player has taken 10 damage.");
         }
         else
         {
             playerHealth -= 5;
             skeletonHealth -= 5;
+            Debug.Log("Both players have taken damage.");
+        }
+    }
 
-            if(playerHealth >= 0)
-            {
-                Debug.Log("Player has died, restart?");
-            }
+    void GameRestart()
+    {
+        if (Input.GetKeyDown(KeyCode.G) && playerHealth <= 0)
+        {
+            SetPlayerStats();
+            SetSkeletonStats();
+            Debug.Log("Game has been restarted.");
 
-            if(skeletonHealth >= 0)
-            {
-                Debug.Log("Skeleton has been defeated.");
-            }
+            gameOver = false;
         }
     }
 }
