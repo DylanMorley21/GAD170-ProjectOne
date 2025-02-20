@@ -10,12 +10,14 @@ public class ProjectOne : MonoBehaviour
     public int playerStrength = 0;
     public int playerDexterity = 0;
     int playerMagicPowerLevel = 0;
+    int playerLevel = 1;
 
     public int skeletonHealth = 0;
     public int skeletonFaith = 0;
     public int skeletonStrength = 0; 
     public int skeletonDexterity = 0;
     int skeletonMagicPowerLevel = 0;
+    int skeletonLevel = 1;
 
     bool gameOver = false;
     bool isPlayerLeveledUp = false;
@@ -37,6 +39,7 @@ public class ProjectOne : MonoBehaviour
 
     void SetPlayerStats()
     {
+        playerLevel = 1; // Add XP and level caps that increase exponentially.
         playerHealth = 25;
         playerFaith = Random.Range(5, 10);
         playerStrength = Random.Range(5, 10);
@@ -45,6 +48,7 @@ public class ProjectOne : MonoBehaviour
 
     void SetSkeletonStats()
     {
+        skeletonLevel = 1; // Add XP and level caps that increase exponentially.
         skeletonHealth = 25;
         skeletonFaith = Random.Range(5, 10);
         skeletonStrength = Random.Range(5, 10);
@@ -56,6 +60,7 @@ public class ProjectOne : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             playerHealth = playerHealth + 25;
+
             Debug.Log("Player has leveled up, new health is " + playerHealth + ". Stats have increased.");
 
             isPlayerLeveledUp = true;
