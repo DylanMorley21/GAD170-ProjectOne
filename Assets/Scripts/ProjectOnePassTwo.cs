@@ -24,11 +24,16 @@ public class ProjectOnePassTwo : MonoBehaviour
 
     public bool isGameStarted = false;
     public bool isSkeletonSpawned = false;
+    public bool isSkeletonDead = false;
+    public bool isPlayerDead = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("<b>MWUAHAHAHA.</b>"); // Game instructions and keybinds.
+        Debug.Log("<b>WELCOME!</b>");
+        Debug.Log("Press Space to Start.");
+        Debug.Log("Press I to Review Instructions.");
+        Debug.Log("Press R to Restart on Defeat."); // Game instructions and keybinds.
     }
 
     // Update is called once per frame
@@ -47,34 +52,15 @@ public class ProjectOnePassTwo : MonoBehaviour
             isGameStarted = true;
         }
 
-        if (isSkeletonSpawned)
+        if (Input.GetKeyDown(KeyCode.B) && isSkeletonSpawned)
         {
-
-            int coinToss = Random.Range(0, 1); // Player is 0, skeleton is 1.
-
-            if(coinToss == 0)
-            {
-                float inSkeleHealth = skeletonHealth;
-                inSkeleHealth = skeletonHealth - playerMagicDamage;
-                skeletonHealth = Mathf.CeilToInt(inSkeleHealth);
-
-                if(skeletonHealth <= 0)
-                {
-                    Debug.Log("Skeleton Has Died!");
-                }
-                else
-                {
-                    Debug.Log("Skeleton has taken " + playerMagicDamage + " damage.");
-
-                }
-
-            }
+            DamageCoinToss();            
         }
     }
 
     void GameInstructions()
     {
-        Debug.Log("Welcome! Controls as follows: Space to Start. ");
+        Debug.Log("Controls as Follows: Space to Start. I for Instruction. R to Restart on Defeat.");
     }
 
     void InitializeNewGame()
@@ -87,18 +73,19 @@ public class ProjectOnePassTwo : MonoBehaviour
     void SetPlayerStats()
     {
         playerHealth = playerStartingHealth; // Set players health to the starting health value.
-        Debug.Log("Player Starting stats have been set, as follows: " + "Player Health = " + playerHealth);
+        playerMagicDamage = 5; // This will need to change according to playerMagicPowerLevel.
+        Debug.Log("Player Health: " + playerHealth + ". Player Damage is Currently: " + playerMagicDamage + ".");
         playerMagicPowerLevel = 1; // Not sure if this should be 0 or 1, in this specific situation, setting the starting magic level.
         // Debug.Log("Player magic power level has been set");
-        playerMagicDamage = 5; // This will need to change according to playerMagicPowerLevel.
         // Debug.Log("Player magic damage has been set");
     }
 
     void SetSkeletonStats()
     {
+        isSkeletonSpawned = true;
         skeletonHealth = skeletonStartingHealth; // Set skeletons health to the starting health value.
         skeletonMagicDamage = Random.Range(0, (3 * playerMagicPowerLevel));
-        Debug.Log("Skeleton Health: " + skeletonHealth + ". Skeleton Damage: " + skeletonMagicDamage); 
+        Debug.Log("Skeleton Health: " + skeletonHealth + ". Skeleton Damage is Currently: " + skeletonMagicDamage + "."); 
     }  
     
     void DeterminePLayerPower()
@@ -106,7 +93,66 @@ public class ProjectOnePassTwo : MonoBehaviour
         
     }
 
+    void DamageCoinToss()
+    {
+        int coinToss = Random.Range(0, 1); // Player is 0, skeleton is 1.
 
+        if (coinToss == 0)
+        {            
+            float inSkeleHealth = skeletonHealth - playerMagicDamage;
+            skeletonHealth = Mathf.CeilToInt(inSkeleHealth);
+
+            if (skeletonHealth <= 0)
+            {
+                Debug.Log("Skeleton Has Died!");
+                isSkeletonDead = true;
+            }
+            else
+            {
+                Debug.Log("Skeleton has taken " + playerMagicDamage + " Damage.");
+            }
+                        
+            if(isSkeletonDead)
+            {
+                if(!isPlayerDead)
+                {
+                    PlayerExperienceReward();
+                    isSkeletonDead = false;
+                }
+            }
+        }
+        else if (coinToss == 1)
+        {
+            if (playerHealth <= 0)
+            {
+                Debug.Log("Player Has Died");
+                isPlayerDead = true;
+                GameRestart();
+            }
+            else
+            {
+                Debug.Log("PLayer Has Taken " + skeletonMagicDamage + " Damage.");
+            }
+        }
+    }
+
+    void GameRestart()
+    {
+        Debug.Log("The Game Has Ended. Press R to Restart.");
+        
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            SetPlayerStats();
+            SetSkeletonStats();
+            Debug.Log("The Game Has Been Restarted.");
+        }
+    }
+
+    void PlayerExperienceReward()
+    {
+        playerExperienceAmount = playerExperienceAmount + Random.Range(45, 50);
+        Debug.Log("Player Has Been Awarded " + playerExperienceAmount + " Experience.");
+    }
 
     // void IsPlayerLevelFive()
     // {
