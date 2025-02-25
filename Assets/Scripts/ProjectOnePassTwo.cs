@@ -30,10 +30,11 @@ public class ProjectOnePassTwo : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("<b>WELCOME!</b>");
+        Debug.Log("<b>~~WELCOME!~~</b>"); // Game instructions and keybinds.
         Debug.Log("Press Space to Start.");
         Debug.Log("Press I to Review Instructions.");
-        Debug.Log("Press R to Restart on Defeat."); // Game instructions and keybinds.
+        Debug.Log("Press R to Restart on Defeat.");
+        Debug.Log("Press A to Attack.");
     }
 
     // Update is called once per frame
@@ -52,7 +53,7 @@ public class ProjectOnePassTwo : MonoBehaviour
             isGameStarted = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.B) && isSkeletonSpawned)
+        if (Input.GetKeyDown(KeyCode.A) && isSkeletonSpawned)
         {
             DamageCoinToss();            
         }
@@ -73,7 +74,7 @@ public class ProjectOnePassTwo : MonoBehaviour
 
     void SetPlayerStats() // I am pretty sure this is finished, besides randomizing values.
     {
-        playerHealth = playerStartingHealth; // Set players health to the starting health value.
+        playerHealth = playerStartingHealth; // Set players health to the starting health value, used for level up health value.
         playerMagicDamage = 5; // This will need to change according to playerMagicPowerLevel.
         Debug.Log("Player Health: " + playerHealth + ". Player Damage is Currently: " + playerMagicDamage + ".");
         playerMagicPowerLevel = 1; // Not sure if this should be 0 or 1, in this specific situation, setting the starting magic level.
@@ -150,8 +151,8 @@ public class ProjectOnePassTwo : MonoBehaviour
         Debug.Log("Player Has Been Awarded " + playerExperienceAmount + " Experience.");
     }
 
-    // void IsPlayerLevelFive()
+    // void IsPlayerLevelFive() // This needs to check the player level, then end the game once playerMagicPowerLevel = 5
     // {
-    //      If player level is equal to five, end the game.
+    //     
     // }
 }
