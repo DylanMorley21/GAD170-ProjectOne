@@ -61,6 +61,7 @@ public class ProjectOnePassTwo : MonoBehaviour
     void GameInstructions()
     {
         Debug.Log("Controls as Follows: Space to Start. I for Instruction. R to Restart on Defeat.");
+        // I need this to not interfere with the game running, just to be able to display it at any time, and then continue the game.
     }
 
     void InitializeNewGame()
@@ -70,7 +71,7 @@ public class ProjectOnePassTwo : MonoBehaviour
         
     }
 
-    void SetPlayerStats()
+    void SetPlayerStats() // I am pretty sure this is finished, besides randomizing values.
     {
         playerHealth = playerStartingHealth; // Set players health to the starting health value.
         playerMagicDamage = 5; // This will need to change according to playerMagicPowerLevel.
@@ -80,7 +81,7 @@ public class ProjectOnePassTwo : MonoBehaviour
         // Debug.Log("Player magic damage has been set");
     }
 
-    void SetSkeletonStats()
+    void SetSkeletonStats() // I am pretty sure this is finished, besides randomizing values.
     {
         isSkeletonSpawned = true;
         skeletonHealth = skeletonStartingHealth; // Set skeletons health to the starting health value.
@@ -88,16 +89,11 @@ public class ProjectOnePassTwo : MonoBehaviour
         Debug.Log("Skeleton Health: " + skeletonHealth + ". Skeleton Damage is Currently: " + skeletonMagicDamage + "."); 
     }  
     
-    void DeterminePLayerPower()
-    {
-        
-    }
-
     void DamageCoinToss()
     {
         int coinToss = Random.Range(0, 1); // Player is 0, skeleton is 1.
 
-        if (coinToss == 0)
+        if (coinToss == 0) // This works mostly, need to do some tweaks but im not sure what.
         {            
             float inSkeleHealth = skeletonHealth - playerMagicDamage;
             skeletonHealth = Mathf.CeilToInt(inSkeleHealth);
@@ -121,7 +117,7 @@ public class ProjectOnePassTwo : MonoBehaviour
                 }
             }
         }
-        else if (coinToss == 1)
+        else if (coinToss == 1) // I know this is wrong, don't really know what goes here instead.
         {
             if (playerHealth <= 0)
             {
@@ -136,11 +132,11 @@ public class ProjectOnePassTwo : MonoBehaviour
         }
     }
 
-    void GameRestart()
+    void GameRestart() 
     {
         Debug.Log("The Game Has Ended. Press R to Restart.");
         
-        if(Input.GetKeyDown(KeyCode.R))
+        if(Input.GetKeyDown(KeyCode.R) && isPlayerDead) // I think this is right for my restart code, may need revision.
         {
             SetPlayerStats();
             SetSkeletonStats();
@@ -148,7 +144,7 @@ public class ProjectOnePassTwo : MonoBehaviour
         }
     }
 
-    void PlayerExperienceReward()
+    void PlayerExperienceReward() // Definetily need more help here, not really understanding how to link XP, level and stat increases.
     {
         playerExperienceAmount = playerExperienceAmount + Random.Range(45, 50);
         Debug.Log("Player Has Been Awarded " + playerExperienceAmount + " Experience.");
