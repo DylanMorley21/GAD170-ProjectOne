@@ -5,154 +5,209 @@ using UnityEngine.UIElements;
 
 public class ProjectOnePassTwo : MonoBehaviour
 {
-    public int playerHealth = 0; //Players overall health value.
-    public int playerStartingHealth = 25; // Player starting health.
-    // public int playerFaith = 0; // Player starting stat values. 
-    // public int playerStrength = 0; // Player starting stat values. 
-    // public int playerDexterity = 0; // Player starting stat values. 
-    public int playerMagicPowerLevel = 0; // The value that will calculate player magic power.
-    public int playerExperienceAmount = 0; // The amount of experience the player starts with.
-    public float playerMagicDamage = 0; // The value that will calculate player magic damage.
+    #region Player, Enemy and Game Variables.
+    public int playerHealth = 0;
+    public int playerStartingHealth = 25; 
+    public int playerMagicPowerLevel = 0;
+    public int playerExperienceAmount = 0; 
+    
+    public float playerMagicDamage = 0; // Seperated for my own cleanliness.
+   
+    public int skeletonHealth = 0;
+    public int skeletonStartingHealth = 25;
 
-    public int skeletonHealth = 0; // Skeletons overall health value.
-    public int skeletonStartingHealth = 25; // Skeleton starting health.
-    // public int skeletonFaith = 0; // Skeleton starting stat values. 
-    // public int skeletonStrength = 0; // Skeleton starting stat values. 
-    // public int skeletonDexterity = 0; // Skeleton starting stat values. 
-    // public int skeletonMagicPowerLevel = 0; // The value that will calculate skeleton magic power.
-    public int skeletonMagicDamage = 0; // The value that will calculate skeleton magic damage.
+    public float skeletonMagicDamage = 0; // Seperated for my own cleanliness.
 
     public bool isGameStarted = false;
     public bool isSkeletonSpawned = false;
     public bool isSkeletonDead = false;
     public bool isPlayerDead = false;
+    #endregion
 
-    // Start is called before the first frame update
-    void Start()
+    #region Start
+    void Start() // Keybindings and game instructions.
     {
-        Debug.Log("<b>~~WELCOME!~~</b>"); // Game instructions and keybinds.
-        Debug.Log("Press Space to Start.");
-        Debug.Log("Press I to Review Instructions.");
-        Debug.Log("Press R to Restart on Defeat.");
-        Debug.Log("Press A to Attack.");
+        Debug.Log("<color=green><b>~~<i>WELCOME!</i>~~</b></color>");
+        Debug.Log("<color=green><b>~~Fight the Skeletons and Reach Level 5 to Win!~~</b></color>");
+        Debug.Log("<color=green><b><i>Press Space to Start.</i></b></color>");
+        Debug.Log("<color=green><b><i>Press I to Review Instructions.</i></b></color>");
+        Debug.Log("<color=green><b><i>Press R to Restart on Defeat.</i></b></color>");
+        Debug.Log("<color=green><b><i>Press A to Attack.</i></b></color>");
     }
+    #endregion
 
-    // Update is called once per frame
+    #region Update
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.I)) // Keybind for game instructions.
         {
             GameInstructions();
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGameStarted == false)
+        if (Input.GetKeyDown(KeyCode.Space) && isGameStarted == false) //Keybind for game start.
         {
             SetPlayerStats();
             SetSkeletonStats();
 
             isGameStarted = true;
-        }
+        } 
 
-        if (Input.GetKeyDown(KeyCode.A) && isSkeletonSpawned)
+        if (Input.GetKeyDown(KeyCode.A) && isSkeletonSpawned) // Keybind for progressing battle.
         {
             DamageCoinToss();            
         }
-    }
 
-    void GameInstructions()
+        if (Input.GetKeyDown(KeyCode.R)) // Keybind for restarting game.
+        {
+            GameRestart();
+        }
+    }
+    #endregion
+
+    #region Instructions
+    void GameInstructions() // Game Instructions for In-Game Display.
     {
-        Debug.Log("Controls as Follows: Space to Start. I for Instruction. R to Restart on Defeat.");
-        // I need this to not interfere with the game running, just to be able to display it at any time, and then continue the game.
+        Debug.Log("<color=green> <b>~~Controls as Follows: <i>Space to Start. I for Instruction. A to Attack Enemy. R to Restart on Defeat.</i>~~</b></color>");
     }
+    #endregion
 
-    void InitializeNewGame()
+    #region Player Stats and Damage
+    void SetPlayerStats() // Sets player health, level and then damage stat.
     {
-        // Debug.Log("Welcome! Controls as follows: Space to Start. ");
-
-        
+        playerHealth = playerStartingHealth * 2;
+        playerMagicPowerLevel = 1;
+        CalculatePlayerDamage();
+        Debug.Log("<color=red><b>~~Player Health: " + playerHealth + ".</b></color> <color=yellow><b>Player Damage is Currently: " + playerMagicDamage + " .~~</b></color>");
+        isPlayerDead = false;
     }
-
-    void SetPlayerStats() // I am pretty sure this is finished, besides randomizing values.
+    
+    void CalculatePlayerDamage() // Calculation for player damage.
     {
-        playerHealth = playerStartingHealth; // Set players health to the starting health value, used for level up health value.
-        playerMagicDamage = 5; // This will need to change according to playerMagicPowerLevel.
-        Debug.Log("Player Health: " + playerHealth + ". Player Damage is Currently: " + playerMagicDamage + ".");
-        playerMagicPowerLevel = 1; // Not sure if this should be 0 or 1, in this specific situation, setting the starting magic level.
-        // Debug.Log("Player magic power level has been set");
-        // Debug.Log("Player magic damage has been set");
+        playerMagicDamage = playerMagicPowerLevel * 2 + 3;
     }
+    #endregion
 
-    void SetSkeletonStats() // I am pretty sure this is finished, besides randomizing values.
+    #region Skeleton Stats and Damage
+    void SetSkeletonStats() // Sets skeletons health, and damage, level is based off player.
     {
         isSkeletonSpawned = true;
-        skeletonHealth = skeletonStartingHealth; // Set skeletons health to the starting health value.
-        skeletonMagicDamage = Random.Range(0, (3 * playerMagicPowerLevel));
-        Debug.Log("Skeleton Health: " + skeletonHealth + ". Skeleton Damage is Currently: " + skeletonMagicDamage + "."); 
-    }  
-    
-    void DamageCoinToss()
-    {
-        int coinToss = Random.Range(0, 1); // Player is 0, skeleton is 1.
+        skeletonHealth = skeletonStartingHealth + playerMagicPowerLevel * 5;
+        skeletonMagicDamage = Random.Range(2, (4 * playerMagicPowerLevel));
+        Debug.Log("<color=aqua><b>~~Skeleton Health: " + skeletonHealth + ". </b></color> <color=lime><b>Skeleton Damage is Currently: " + skeletonMagicDamage + ".~~</b></color>");
+        isSkeletonDead = false;
+    }
+    #endregion
 
-        if (coinToss == 0) // This works mostly, need to do some tweaks but im not sure what.
+    #region Coin Toss for Battle
+    void DamageCoinToss() //Starting coin toss, decides which player will do damage on button press.
+    {
+        int coinToss = Random.Range(0, 2); // Player is 0, skeleton is 1.
+
+        // coinToss = 0;
+        // coinToss = 1;
+
+        if (coinToss == 0) 
         {            
             float inSkeleHealth = skeletonHealth - playerMagicDamage;
             skeletonHealth = Mathf.CeilToInt(inSkeleHealth);
 
             if (skeletonHealth <= 0)
             {
-                Debug.Log("Skeleton Has Died!");
+                Debug.Log("<color=aqua><i><b>Skeleton Has Died!</b></i></color>");
                 isSkeletonDead = true;
+                int playerHealingAmount;
+                playerHealingAmount = playerMagicPowerLevel * 2 + 5;
+                Debug.Log("<color=red><b>The Player Has Earned " + playerHealingAmount + " Health!</b></color>");
+                playerHealth = playerHealth + playerHealingAmount;
+                Debug.Log("<color=red><b>The Player Has " + playerHealth + " Health.</b></color>");
             }
             else
             {
-                Debug.Log("Skeleton has taken " + playerMagicDamage + " Damage.");
-            }
+                Debug.Log("<color=yellow><b>Skeleton has taken " + playerMagicDamage + " Damage.</b></color> <color=aqua><b>Remaining Skeleton Health: " + skeletonHealth + ".</b></color>");
+            } 
                         
             if(isSkeletonDead)
             {
                 if(!isPlayerDead)
                 {
-                    PlayerExperienceReward();
-                    isSkeletonDead = false;
+                    PlayerExperienceReward(0);
+                    if (!isSkeletonSpawned)
+                    {
+                        return;
+                    }
+
+                    Debug.Log("<color=green><b>~~A New Skeleton Appears!~~</b></color>");
+
+                    SetSkeletonStats();
+
+                    Debug.Log("<color=red><b>~~Player Health: " + playerHealth + "</b></color>. <color=yellow><b> Player Damage is Currently: " + playerMagicDamage + ".~~</b></color>");
                 }
             }
         }
-        else if (coinToss == 1) // I know this is wrong, don't really know what goes here instead.
+        else if (coinToss == 1) 
         {
-            if (playerHealth <= 0)
+            int hitCoinToss = Random.Range(0, 10);
+            if (hitCoinToss <= 3) // Coin toss for if skeleton hits player, if not, skeleton misses.
             {
-                Debug.Log("Player Has Died");
-                isPlayerDead = true;
-                GameRestart();
+                Debug.Log("<color=lime><i><b>The Skeleton Missed.</b></i></color>");
             }
             else
             {
-                Debug.Log("PLayer Has Taken " + skeletonMagicDamage + " Damage.");
-            }
+                float inPlayerHealth = playerHealth - skeletonMagicDamage;
+                playerHealth = Mathf.CeilToInt(inPlayerHealth);
+
+                if (playerHealth <= 0)
+                {
+                    Debug.Log("<color=red><b>Player Has Died.</b></color>");
+                    Debug.Log("<color=green><b>The Game Has Ended. <i>Press R to Restart.</i></b></color>");
+                    isPlayerDead = true;
+                    isSkeletonSpawned = false;
+                }
+                else
+                {
+                    Debug.Log("<color=lime><b>Player Has Taken " + skeletonMagicDamage + " Damage.</b></color> <color=red><b>Remaining Player Health: " + playerHealth + ".</b></color>");
+                }
+            }                    
         }
     }
+    #endregion
 
-    void GameRestart() 
+    #region Player Experience and Levelling
+    void PlayerExperienceReward(int playerExperienceEarned) // Creates a random amount of XP to reward, adds it to players current XP, displays both.
     {
-        Debug.Log("The Game Has Ended. Press R to Restart.");
-        
-        if(Input.GetKeyDown(KeyCode.R) && isPlayerDead) // I think this is right for my restart code, may need revision.
+        playerExperienceEarned = Random.Range(45, 56);
+        Debug.Log("<color=magenta><b>Player Has Earned: " + playerExperienceEarned + " Experience.</b></color>");
+        playerExperienceAmount = playerExperienceAmount + playerExperienceEarned;
+        Debug.Log("<color=magenta><b>Player Has a Total of: " + playerExperienceAmount + " Experience.</b></color>");
+
+        if(playerExperienceAmount >= 100) // Check for player XP amount, if over 100, level up!
         {
-            SetPlayerStats();
-            SetSkeletonStats();
-            Debug.Log("The Game Has Been Restarted.");
+            playerMagicPowerLevel = playerMagicPowerLevel + 1;    
+            
+            if(playerMagicPowerLevel == 5) // Check for player level, if 5 has been reached, you win!
+            {
+                Debug.Log("<color=silver><b>You have Won! <i>Press R to Restart.</i></b></color>");
+                // isPlayerDead = true;
+                isSkeletonSpawned = false;
+            }
+            else
+            {
+                Debug.Log("<color=magenta><b>Player Magic Power has Increased. Magic Power is now: " + playerMagicPowerLevel +".</b></color>");
+                CalculatePlayerDamage();
+                playerExperienceAmount = 0;
+                playerHealth = playerHealth + playerMagicPowerLevel * 3;
+                Debug.Log("<color=red><b>Player Heath Stat has Increased. Health is now: " + playerHealth + ".</b></color>");
+            }            
         }
     }
+    #endregion
 
-    void PlayerExperienceReward() // Definetily need more help here, not really understanding how to link XP, level and stat increases.
+    #region Restart
+    void GameRestart() // Restarts the game by reprinting fresh stats.
     {
-        playerExperienceAmount = playerExperienceAmount + Random.Range(45, 50);
-        Debug.Log("Player Has Been Awarded " + playerExperienceAmount + " Experience.");
+        Debug.Log("<color=green><b><i>The Game Has Been Restarted.</i></b></color>");
+        SetPlayerStats();
+        SetSkeletonStats();        
     }
-
-    // void IsPlayerLevelFive() // This needs to check the player level, then end the game once playerMagicPowerLevel = 5
-    // {
-    //     
-    // }
+    #endregion
 }
