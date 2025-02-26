@@ -130,7 +130,7 @@ public class ProjectOnePassTwo : MonoBehaviour
             {
                 if(!isPlayerDead)
                 {
-                    PlayerExperienceReward(0);
+                    PlayerExperienceReward(45, 56);
                     if (!isSkeletonSpawned)
                     {
                         return;
@@ -173,18 +173,25 @@ public class ProjectOnePassTwo : MonoBehaviour
     #endregion
 
     #region Player Experience and Levelling
-    void PlayerExperienceReward(int playerExperienceEarned) // Creates a random amount of XP to reward, adds it to players current XP, displays both.
+    void PlayerExperienceReward(int minimum, int maximum) // Creates a random amount of XP to reward, adds it to players current XP, displays both.
     {
-        playerExperienceEarned = Random.Range(45, 56);
-        Debug.Log("<color=magenta><b>Player Has Earned: " + playerExperienceEarned + " Experience.</b></color>");
-        playerExperienceAmount = playerExperienceAmount + playerExperienceEarned;
-        Debug.Log("<color=magenta><b>Player Has a Total of: " + playerExperienceAmount + " Experience.</b></color>");
+        playerExperienceAmount = playerExperienceAmount + Random.Range(minimum, maximum);
+        Debug.Log("<color=magenta><b>Player Has Earned: " + playerExperienceAmount + " Experience.</b></color>");       
 
-        if(playerExperienceAmount >= 100) // Check for player XP amount, if over 100, level up!
+        PlayerLevelUp();
+    }
+    #endregion
+
+    #region Player Level Up
+    void PlayerLevelUp()
+    {
+        int currentExperienceThreshold = 100 * playerMagicPowerLevel;
+
+        if (playerExperienceAmount >= currentExperienceThreshold) // Check for player XP amount, if over 100, level up!
         {
-            playerMagicPowerLevel = playerMagicPowerLevel + 1;    
-            
-            if(playerMagicPowerLevel == 5) // Check for player level, if 5 has been reached, you win!
+            playerMagicPowerLevel = playerMagicPowerLevel + 1;
+
+            if (playerMagicPowerLevel == 5) // Check for player level, if 5 has been reached, you win!
             {
                 Debug.Log("<color=silver><b>You have Won! <i>Press R to Restart.</i></b></color>");
                 // isPlayerDead = true;
@@ -192,12 +199,14 @@ public class ProjectOnePassTwo : MonoBehaviour
             }
             else
             {
-                Debug.Log("<color=magenta><b>Player Magic Power has Increased. Magic Power is now: " + playerMagicPowerLevel +".</b></color>");
+                Debug.Log("<color=magenta><b>Player Magic Power has Increased. Magic Power is now: " + playerMagicPowerLevel + ".</b></color>");
                 CalculatePlayerDamage();
-                playerExperienceAmount = 0;
+                playerExperienceAmount = playerExperienceAmount - currentExperienceThreshold;
                 playerHealth = playerHealth + playerMagicPowerLevel * 3;
                 Debug.Log("<color=red><b>Player Heath Stat has Increased. Health is now: " + playerHealth + ".</b></color>");
-            }            
+
+                PlayerLevelUp();
+            }
         }
     }
     #endregion
